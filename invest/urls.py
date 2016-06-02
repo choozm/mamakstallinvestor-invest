@@ -20,6 +20,6 @@ from . import views
 urlpatterns = [
     url(r'^$', views.home),
     url(r'^admin/', admin.site.urls),
-    url(r'^price/(.+)$', views.price),
-    url(r'^prices/(.+)$', views.prices),
+    url(r'^quote/(.+)$', views.quote),
+    url(r'^quotes/(.+)$', views.quotes),
 ]
