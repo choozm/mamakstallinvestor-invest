@@ -19,7 +19,7 @@ def quote(request, symbol):
 def quotes(request, symbols):
     quotes = []
     data = dict()
-    data['title'] = "Stock Prices"
+    data['title'] = 'Stock Quotes | The Mamak Stall Investor'
 
     results = json.loads(_query_yql(symbols))
 
