@@ -65,3 +65,4 @@ def home(request):
 </h3>
 </body></html>'''
     return HttpResponse(html)
+
