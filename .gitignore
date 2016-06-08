@@ -2,4 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# SQLite
 db.sqlite*
+
+# Eclipse
+.project
+.pydevproject
