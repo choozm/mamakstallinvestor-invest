@@ -1,4 +1,5 @@
 from django.db import models
+import jsonfield
 
 STOCKS = 'STK'
 BONDS = 'BND'
@@ -14,8 +15,8 @@ TYPE_OF_ASSET_CLASSES = (
 
 class Investor(models.Model):
     name = models.CharField(max_length=80)
-    nickname = models.CharField(max_length=30)
-    email = models.EmailField()
+    username = models.CharField(max_length=30)
+    email = models.EmailField(blank=True)
     
     def __str__(self):
         return self.name
@@ -27,6 +28,7 @@ class Portfolio(models.Model):
     risk_tolerance = models.TextField()
     time_frame = models.PositiveSmallIntegerField()
     stock_bond_ratio = models.DecimalField(max_digits=4, decimal_places=2)  # Stock percentage divided by bond percentage
+    asset_allocation = jsonfield.JSONField()
     
     def __str__(self):
         return "{}'s {}".format(self.owner.name, self.name)
@@ -39,7 +41,6 @@ class AssetClass(models.Model):
             choices=TYPE_OF_ASSET_CLASSES,
             default=STOCKS,
             )
-    percentage = models.DecimalField(max_digits=3, decimal_places=2)  # Range: 0.00 to 1.00
     
     def __str__(self):
         return self.name
@@ -53,14 +54,13 @@ class Account(models.Model):
 
 class Security(models.Model):
     asset_class = models.ForeignKey(AssetClass)
-    asset_location = models.ForeignKey(Account)
     name = models.CharField(max_length=128)
     symbol = models.CharField(max_length=16)
     isin = models.CharField(max_length=16)
-    currency =  models.CharField(max_length=3)
-    exchange = models.CharField(max_length=64)
+    currency =  models.CharField(max_length=3)  # TODO: use choices
+    exchange = models.CharField(max_length=64)  # TODO: use choices
     expense_ratio_percent = models.DecimalField(max_digits=4, decimal_places=2)  # 0.40 means 0.40%
-    last_trade_price = models.DecimalField(max_digits=18, decimal_places=6)
+    last_trade_price = models.DecimalField(max_digits=11, decimal_places=4)  # One million
     
     def __str__(self):
         return self.name
@@ -70,8 +70,8 @@ class Transaction(models.Model):
     security = models.ForeignKey(Security)
     account = models.ForeignKey(Account)
     date = models.DateField()
-    price = models.DecimalField(max_digits=17, decimal_places=4)  # One trillion
-    quantity = models.DecimalField(max_digits=10, decimal_places=4) # One hundred thousand 
+    price = models.DecimalField(max_digits=11, decimal_places=4)  # One million
+    quantity = models.DecimalField(max_digits=11, decimal_places=4)  # One million 
     
     def __str__(self):
-        return self.name
+        return "{} - {}".format(self.date, self.security.name)
