@@ -28,13 +28,13 @@ class Portfolio(models.Model):
     risk_tolerance = models.TextField()
     time_frame = models.PositiveSmallIntegerField()
     stock_bond_ratio = models.DecimalField(max_digits=4, decimal_places=2)  # Stock percentage divided by bond percentage
-    asset_allocation = jsonfield.JSONField()
+    asset_allocation = jsonfield.JSONField()  # Key = AssetClass id. Value = percentage in decimal format, ranges from 0.0 to 1.0. 
     
     def __str__(self):
         return "{}'s {}".format(self.owner.name, self.name)
     
 class AssetClass(models.Model):
-    portfolio = models.ForeignKey(Portfolio)
+    portfolio = models.ForeignKey(Investor)
     name = models.CharField(max_length=128)
     type = models.CharField(
             max_length=3,
