@@ -34,7 +34,7 @@ class Portfolio(models.Model):
         return "{}'s {}".format(self.owner.name, self.name)
     
 class AssetClass(models.Model):
-    portfolio = models.ForeignKey(Investor)
+    owner = models.ForeignKey(Investor)
     name = models.CharField(max_length=128)
     type = models.CharField(
             max_length=3,
