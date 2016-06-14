@@ -20,15 +20,15 @@ def populate():
                   stock_bond_ratio=4, 
                   asset_allocation={})
 
-    a1 = add_assetclass(portfolio=p1, 
+    a1 = add_assetclass(owner=investor1, 
                         name='US', 
                         asset_type=STOCKS)
     
-    a2 = add_assetclass(portfolio=p1, 
+    a2 = add_assetclass(owner=investor1, 
                         name='EU', 
                         asset_type=STOCKS)
 
-    a3 = add_assetclass(portfolio=p1, 
+    a3 = add_assetclass(owner=investor1, 
                         name='Global Bonds', 
                         asset_type=BONDS)
     
@@ -58,23 +58,23 @@ def populate():
                   stock_bond_ratio=1, 
                   asset_allocation={})
 
-    add_assetclass(portfolio=p2, 
-                        name='World', 
-                        asset_type=STOCKS)
+    add_assetclass(owner=investor2, 
+                   name='World', 
+                   asset_type=STOCKS)
     
-    add_assetclass(portfolio=p2, 
-                        name='REIT', 
-                        asset_type=ALTERNATIVES)
+    add_assetclass(owner=investor2, 
+                   name='REIT', 
+                   asset_type=ALTERNATIVES)
 
-    add_assetclass(portfolio=p2, 
-                        name='Global Bonds', 
-                        asset_type=BONDS)
+    add_assetclass(owner=investor2, 
+                   name='Global Bonds', 
+                   asset_type=BONDS)
     
     for i in Investor.objects.all():
         print ('{} - {} - {}'.format(i.name, i.username, i.email))
         for p in Portfolio.objects.filter(owner=i):
             print ('  {} - {} - {} - {}'.format(p.name, p.objective, p.time_frame, p.asset_allocation))
-            for a in AssetClass.objects.filter(portfolio=p):
+            for a in AssetClass.objects.filter(owner=i):
                 print ('  {}. {} - {}'.format(a.id, a.name, a.type))
                 for s in Security.objects.filter(asset_class=a):
                     print ('    {} {}'.format(s.name, s.symbol))
@@ -98,8 +98,8 @@ def add_portfolio(owner, name, obj, risk_tolerance, time_frame, stock_bond_ratio
     p.save()
     return p
 
-def add_assetclass(portfolio, name, asset_type):
-    a = AssetClass.objects.get_or_create(portfolio=portfolio, 
+def add_assetclass(owner, name, asset_type):
+    a = AssetClass.objects.get_or_create(owner=owner, 
                                          name=name, 
                                          type=asset_type,
                                          )[0]
