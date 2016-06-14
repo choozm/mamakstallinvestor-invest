@@ -46,6 +46,7 @@ class AssetClass(models.Model):
         return self.name
 
 class Account(models.Model):
+    owner = models.ForeignKey(Investor)
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=128)
     
