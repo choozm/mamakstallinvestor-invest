@@ -1,11 +1,12 @@
 import os
+import datetime
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'invest.settings')
 
 import django
 django.setup()
 
 from myportfolio.models import Investor, Portfolio, AssetClass, STOCKS, BONDS,\
-    ALTERNATIVES, Security
+    ALTERNATIVES, Security, Transaction, Account
 
 def populate():
     investor1 = add_investor(name='David Lim', 
@@ -32,9 +33,9 @@ def populate():
                         name='Global Bonds', 
                         asset_type=BONDS)
     
-    p1.asset_allocation[a1.id] = 0.3
-    p1.asset_allocation[a2.id] = 0.3
-    p1.asset_allocation[a3.id] = 0.4
+    p1.target_asset_allocation[a1.id] = 0.3
+    p1.target_asset_allocation[a2.id] = 0.3
+    p1.target_asset_allocation[a3.id] = 0.4
     p1.save()
     
     s1 = add_security(asset_class=a1, 
@@ -73,11 +74,26 @@ def populate():
     for i in Investor.objects.all():
         print ('{} - {} - {}'.format(i.name, i.username, i.email))
         for p in Portfolio.objects.filter(owner=i):
-            print ('  {} - {} - {} - {}'.format(p.name, p.objective, p.time_frame, p.asset_allocation))
+            print ('  {} - {} - {} - {}'.format(p.name, p.objective, p.time_frame, p.target_asset_allocation))
             for a in AssetClass.objects.filter(owner=i):
                 print ('  {}. {} - {}'.format(a.id, a.name, a.type))
                 for s in Security.objects.filter(asset_class=a):
                     print ('    {} {}'.format(s.name, s.symbol))
+    
+    ac1 = Account.objects.get_or_create(owner=investor1,
+                                        name='AC1',
+                                        description='AC1'
+                                        )[0]
+    ac1.save()
+    t = Transaction.objects.get_or_create(portfolio=p1,
+                                          security=s1,
+                                          account=ac1,
+                                          date=datetime.datetime.now(),
+                                          price=1,
+                                          quantity=1)[0]
+    t.save()
+    print (p1.transaction_set.all())
+    
     
 def add_investor(name, username, email):
     i=Investor.objects.get_or_create(name=name, 
@@ -88,13 +104,13 @@ def add_investor(name, username, email):
 def add_portfolio(owner, name, obj, risk_tolerance, time_frame, stock_bond_ratio, asset_allocation):
     p = Portfolio.objects.get_or_create(owner=owner,
                                         time_frame=time_frame, 
-                                        stock_bond_ratio=stock_bond_ratio,
+                                        target_stock_bond_ratio=stock_bond_ratio,
                                         )[0]
     p.owner = owner
     p.name = name
     p.objective = obj
     p.risk_tolerance = risk_tolerance
-    p.asset_allocation = asset_allocation
+    p.target_asset_allocation = asset_allocation
     p.save()
     return p
 
@@ -121,7 +137,7 @@ def add_security(asset_class,
                                     currency=currency,
                                     exchange=exchange,
                                     expense_ratio_percent=expense_ratio_percent,
-                                    last_trade_price=last_trade_price,
+                                    #last_trade_price=last_trade_price,
                                     )[0]
     
     return s
