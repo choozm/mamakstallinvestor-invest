@@ -39,7 +39,7 @@ def populate():
     p1.save()
     
     s1 = add_security(asset_class=a1, 
-                      name='Vanguard total Stock ETF', 
+                      name='Vanguard Total Stock ETF', 
                       symbol='VTI', 
                       isin='QW1234456', 
                       currency='USD', 
@@ -85,13 +85,22 @@ def populate():
                                         description='AC1'
                                         )[0]
     ac1.save()
-    t = Transaction.objects.get_or_create(portfolio=p1,
-                                          security=s1,
-                                          account=ac1,
-                                          date=datetime.datetime.now(),
-                                          price=1,
-                                          quantity=1)[0]
-    t.save()
+    t1 = add_transaction(portfolio=p1, 
+                         security=s1, 
+                         account=ac1, 
+                         date=datetime.date(2016, 5, 3), 
+                         price=100.0, 
+                         quantity=10) 
+    t1.save()
+    
+    t2 = add_transaction(portfolio=p1, 
+                     security=s1, 
+                     account=ac1, 
+                     date=datetime.date(2016, 5, 18), 
+                     price=108.0, 
+                     quantity=5) 
+    
+    t2.save()
     print (p1.transaction_set.all())
     
     
@@ -137,11 +146,24 @@ def add_security(asset_class,
                                     currency=currency,
                                     exchange=exchange,
                                     expense_ratio_percent=expense_ratio_percent,
-                                    #last_trade_price=last_trade_price,
+                                    last_trade_price=last_trade_price,
                                     )[0]
     
     return s
 
+def add_account():
+    pass
+
+def add_transaction(portfolio, security, account, 
+                    date, price, quantity):
+    t = Transaction.objects.get_or_create(portfolio=portfolio,
+                                          security=security,
+                                          account=account,
+                                          date=date,
+                                          price=price,
+                                          quantity=quantity)[0]
+                                          
+    return t
+
 if __name__ == '__main__':
     populate()
-    
