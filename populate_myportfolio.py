@@ -59,50 +59,56 @@ def populate():
                   stock_bond_ratio=1, 
                   asset_allocation={})
 
-    add_assetclass(owner=investor2, 
+    a4 = add_assetclass(owner=investor2, 
                    name='World', 
                    asset_type=STOCKS)
     
-    add_assetclass(owner=investor2, 
+    a5 = add_assetclass(owner=investor2, 
                    name='REIT', 
                    asset_type=ALTERNATIVES)
 
-    add_assetclass(owner=investor2, 
+    a6 = add_assetclass(owner=investor2, 
                    name='Global Bonds', 
                    asset_type=BONDS)
+    p2.target_asset_allocation[a4.id] = 0.5
+    p2.target_asset_allocation[a5.id] = 0.1
+    p2.target_asset_allocation[a6.id] = 0.4
+    p2.save()
+    
+    ac1 = add_account(owner=investor1,
+                      name='SCB SGD',
+                      description='SGD trading account')
+
+    ac2 = add_account(owner=investor1,
+                      name='SCB USD',
+                      description='USD trading account')
+        
+    t1 = add_transaction(portfolio=p1, 
+                         security=s1, 
+                         account=ac2, 
+                         date=datetime.date(2016, 5, 3), 
+                         price=100.0, 
+                         quantity=10) 
+    
+    t2 = add_transaction(portfolio=p1, 
+                     security=s1, 
+                     account=ac2, 
+                     date=datetime.date(2016, 5, 18), 
+                     price=108.0, 
+                     quantity=5) 
     
     for i in Investor.objects.all():
         print ('{} - {} - {}'.format(i.name, i.username, i.email))
+        for ac in Account.objects.filter(owner=i):
+            print ('{} - {}'.format(ac.name, ac.description))
         for p in Portfolio.objects.filter(owner=i):
             print ('  {} - {} - {} - {}'.format(p.name, p.objective, p.time_frame, p.target_asset_allocation))
             for a in AssetClass.objects.filter(owner=i):
                 print ('  {}. {} - {}'.format(a.id, a.name, a.type))
                 for s in Security.objects.filter(asset_class=a):
                     print ('    {} {}'.format(s.name, s.symbol))
-    
-    ac1 = Account.objects.get_or_create(owner=investor1,
-                                        name='AC1',
-                                        description='AC1'
-                                        )[0]
-    ac1.save()
-    t1 = add_transaction(portfolio=p1, 
-                         security=s1, 
-                         account=ac1, 
-                         date=datetime.date(2016, 5, 3), 
-                         price=100.0, 
-                         quantity=10) 
-    t1.save()
-    
-    t2 = add_transaction(portfolio=p1, 
-                     security=s1, 
-                     account=ac1, 
-                     date=datetime.date(2016, 5, 18), 
-                     price=108.0, 
-                     quantity=5) 
-    
-    t2.save()
-    print (p1.transaction_set.all())
-    
+                    for t in Transaction.objects.filter(security=s):
+                        print ('      {} {} {} {} {}'.format(t.security, t.account, t.date, t.price, t.quantity))
     
 def add_investor(name, username, email):
     i=Investor.objects.get_or_create(name=name, 
@@ -120,7 +126,6 @@ def add_portfolio(owner, name, obj, risk_tolerance, time_frame, stock_bond_ratio
     p.objective = obj
     p.risk_tolerance = risk_tolerance
     p.target_asset_allocation = asset_allocation
-    p.save()
     return p
 
 def add_assetclass(owner, name, asset_type):
@@ -151,8 +156,12 @@ def add_security(asset_class,
     
     return s
 
-def add_account():
-    pass
+def add_account(owner, name, description):
+    ac = Account.objects.get_or_create(owner=owner,
+                                       name=name,
+                                       description=description
+                                       )[0]
+    return ac
 
 def add_transaction(portfolio, security, account, 
                     date, price, quantity):
