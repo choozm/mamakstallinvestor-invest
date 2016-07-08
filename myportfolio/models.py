@@ -1,4 +1,5 @@
 from django.db import models
+from myportfolio.managers import PortfolioManager
 import jsonfield
 
 STOCKS = 'STK'
@@ -28,7 +29,9 @@ class Portfolio(models.Model):
     risk_tolerance = models.TextField()
     time_frame = models.PositiveSmallIntegerField()
     target_stock_bond_ratio = models.DecimalField(max_digits=4, decimal_places=2)  # Stock percentage divided by bond percentage
-    target_asset_allocation = jsonfield.JSONField()  # Key = AssetClass id. Value = percentage in decimal format, ranges from 0.0 to 1.0. 
+    target_asset_allocation = jsonfield.JSONField()  # Key = AssetClass id. Value = percentage in decimal format, ranges from 0.0 to 1.0.
+    
+    objects = PortfolioManager()
     
     def __str__(self):
         return "{}'s {}".format(self.owner.name, self.name)
@@ -63,6 +66,8 @@ class Security(models.Model):
     expense_ratio_percent = models.DecimalField(max_digits=4, decimal_places=2)  # 0.40 means 0.40%
     last_trade_price = models.DecimalField(max_digits=11, decimal_places=4)  # One million
     
+    objects = PortfolioManager()
+        
     def __str__(self):
         return self.name
 

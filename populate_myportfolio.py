@@ -110,6 +110,15 @@ def populate():
                     for t in Transaction.objects.filter(security=s):
                         print ('      {} {} {} {} {}'.format(t.security, t.account, t.date, t.price, t.quantity))
     
+    
+    print (Portfolio.objects.all())
+    print (p1.transaction_set.all())
+    print (Portfolio.objects.transactions(1))
+    
+    print (Security.objects.all())
+    print (s1.transaction_set.all())
+    print (Security.objects.transactions(1))
+    
 def add_investor(name, username, email):
     i=Investor.objects.get_or_create(name=name, 
                                      username=username,
