@@ -15,3 +15,13 @@ def portfolio(request, investor_id):
     context['investor']= investor
     context['portfolios'] = portfolios
     return render(request, 'myportfolio/portfolio.html', context)
+
+def transaction(request, portfolio_id):
+    context = {}
+    portfolio = Portfolio.objects.get(id=portfolio_id)
+    transactions = portfolio.transaction_set.all()
+    
+    context['portfolio'] = portfolio
+    context['transactions']= transactions
+
+    return render(request, 'myportfolio/transaction.html', context)

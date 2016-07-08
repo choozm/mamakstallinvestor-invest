@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Portfolio</title>
+</head>
+
+<body>
+	<h1>Transactions in Portfolio "{{ portfolio.name }}"</h1>
+
+	{% if transactions %}
+	<ul>
+		{% for t in transactions %}
+		<li>{{ t.date }} - {{ t.security }}</li> {% endfor %}
+	</ul>
+	{% else %}
+	<strong>There are no transactions.</strong> {% endif %}
+</body>
+</html>

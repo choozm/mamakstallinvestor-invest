@@ -10,7 +10,7 @@
 	{% if portfolios %}
 	<ul>
 		{% for portfolio in portfolios %}
-		<li><a href="">{{ portfolio.name }}</a></li> {% endfor %}
+		<li><a href="/myportfolio/transaction/{{ portfolio.id }}">{{ portfolio.name }}</a></li> {% endfor %}
 	</ul>
 	{% else %}
 	<strong>There are no portfolios.</strong> {% endif %}
