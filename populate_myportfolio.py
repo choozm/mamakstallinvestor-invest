@@ -46,6 +46,32 @@ def populate():
                       exchange='NYSE', 
                       expense_ratio_percent=0.1, 
                       last_trade_price=100.05)
+   
+    ac1 = add_account(owner=investor1,
+                      name='SCB SGD',
+                      description='SGD trading account')
+
+    ac2 = add_account(owner=investor1,
+                      name='SCB USD',
+                      description='USD trading account')
+    
+    ac2 = add_account(owner=investor1,
+                  name='SCB GBP',
+                  description='GBP trading account')
+    
+    t1 = add_transaction(portfolio=p1, 
+                         security=s1, 
+                         account=ac2, 
+                         date=datetime.date(2016, 5, 3), 
+                         price=100.0, 
+                         quantity=10) 
+    
+    t2 = add_transaction(portfolio=p1, 
+                     security=s1, 
+                     account=ac2, 
+                     date=datetime.date(2016, 5, 18), 
+                     price=108.0, 
+                     quantity=5) 
 
     investor2 = add_investor(name='Diana', 
                  username='Rose', 
@@ -74,29 +100,7 @@ def populate():
     p2.target_asset_allocation[a5.id] = 0.1
     p2.target_asset_allocation[a6.id] = 0.4
     p2.save()
-    
-    ac1 = add_account(owner=investor1,
-                      name='SCB SGD',
-                      description='SGD trading account')
-
-    ac2 = add_account(owner=investor1,
-                      name='SCB USD',
-                      description='USD trading account')
         
-    t1 = add_transaction(portfolio=p1, 
-                         security=s1, 
-                         account=ac2, 
-                         date=datetime.date(2016, 5, 3), 
-                         price=100.0, 
-                         quantity=10) 
-    
-    t2 = add_transaction(portfolio=p1, 
-                     security=s1, 
-                     account=ac2, 
-                     date=datetime.date(2016, 5, 18), 
-                     price=108.0, 
-                     quantity=5) 
-    
     for i in Investor.objects.all():
         print ('{} - {} - {}'.format(i.name, i.username, i.email))
         for ac in Account.objects.filter(owner=i):
