@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Portfolio</title>
+</head>
+
+<body>
+	<h1>Investors</h1>
+
+	{% if investors %}
+	<ul>
+		{% for investor in investors %}
+		<li><a href="/myportfolio/portfolio/{{ investor.id }}">{{ investor.name }}</a></li> 
+		{% endfor %}
+	</ul>
+	{% else %}
+	<strong>There are no investors.</strong> {% endif %}
+</body>
+</html>

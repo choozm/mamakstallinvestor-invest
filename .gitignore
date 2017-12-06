@@ -4,8 +4,9 @@ __pycache__/
 *$py.class
 
 # SQLite
-db.sqlite*
+db.sqlite3
 
 # Eclipse
 .project
 .pydevproject
+.settings

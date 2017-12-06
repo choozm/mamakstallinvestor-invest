@@ -1,60 +1,45 @@
 import requests
 import json
-from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from django.template.loader import get_template
 from django.template import Context
 
-URL = 'https://query.yahooapis.com/v1/public/yql'
-QUERY_STR = 'q=select Name,Symbol,LastTradePriceOnly from yahoo.finance.quote \
-where symbol in (%s)&format=json&env=store://datatables.org/alltableswithkeys\
-&callback='
+API_KEY= "<enter your API key>"
+URL = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey={}&symbol={}"
+
+def _query_source(symbol):
+    r = requests.get(URL.format(API_KEY, symbol))
+    return json.loads(r.content.decode('utf-8'))
+
+def _retrieve_quote(result):
+    try:
+        last_refreshed = result["Meta Data"]["3. Last Refreshed"]
+        quote = result["Time Series (Daily)"][last_refreshed]["4. close"]
+    except:
+        print("ERROR: Setting 'quote' to -1")
+        quote = -1
+
+    return quote
 
 def quote(request, symbol):
-    results = json.loads(_query_yql(symbol))
-    quote = results['query']['results']['quote']['LastTradePriceOnly']
-    return HttpResponse(quote if quote else -1)
-
+    result = _query_source(symbol)
+    quote = _retrieve_quote(result)
+    return HttpResponse(quote)
 
 def quotes(request, symbols):
     quotes = []
     data = dict()
     data['title'] = 'Stock Quotes | The Mamak Stall Investor'
 
-    results = json.loads(_query_yql(symbols))
+    symbol_list = list(filter(None,(symbols.split(','))))
+    for s in symbol_list:
+        result = _query_source(s)
+        quote = _retrieve_quote(result)
+        quotes.append(quote)
 
-    for q in results['query']['results']['quote']:
-        quote = q['LastTradePriceOnly']
-        quotes.append(quote if quote else -1)
     data['quotes'] = quotes
-
     html = get_template('liststockprice.html').render(Context(data))
     return HttpResponse(html)
-
-
-def _query_yql(symbols):
-    # Another way to process symbols:
-    #symbol_str = str(tuple(symbols.split(',')))
-    #symbol_list = symbol_str.replace("'", '"')[1:len(symbol_str)-1]
-
-    symbol_list = ",".join(tuple(map(lambda x:'"'+ x +'"', symbols.split(','))))
-    r = requests.get(URL, QUERY_STR % symbol_list)
-    return r.content.decode('utf-8')  # return string
-
-
-def _scrape_yahoo(symbol):
-    symbol = symbol.lower()
-
-    if symbol.endswith(('.hk', 's.si')):
-        html_id = 'yfs_l10_' + symbol
-    else:
-        html_id = 'yfs_l84_' + symbol
-
-    r = requests.get('https://sg.finance.yahoo.com/q?s=%s&ql=1' % symbol)
-    soup = BeautifulSoup(r.content, 'html.parser')
-    price = soup.find(id=html_id)
-    return -1 if price is None else price.text
-
 
 def home(request):
     html = '''
@@ -65,4 +50,3 @@ def home(request):
 </h3>
 </body></html>'''
     return HttpResponse(html)
-
