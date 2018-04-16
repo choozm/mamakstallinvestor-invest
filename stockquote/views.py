@@ -2,7 +2,6 @@ import requests
 import json
 from django.http import HttpResponse
 from django.template.loader import get_template
-from django.template import Context
 
 API_KEY= "<enter your API key>"
 URL = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&apikey={}&symbol={}"
@@ -38,7 +37,7 @@ def quotes(request, symbols):
         quotes.append(quote)
 
     data['quotes'] = quotes
-    html = get_template('liststockprice.html').render(Context(data))
+    html = get_template('liststockprice.html').render(data)
     return HttpResponse(html)
 
 def home(request):
